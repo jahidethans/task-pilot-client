@@ -29,6 +29,7 @@ const DashboardMain = () => {
       status: "to-do",
       email: user?.email,
     };
+    console.log(task);
     axios.post("/alltask", task).then(() => {
       refetch();
       toast("Add Task Sucessfully", {
@@ -41,9 +42,9 @@ const DashboardMain = () => {
     });
   };
 
-  const to_do = allTask.filter((task)=>task.status === 'to-do')
-  const ongoing = allTask.filter((task)=>task.status === 'ongoing')
-  const completed = allTask.filter((task)=>task.status === 'completed')
+  const to_do = allTask.filter((task) => task.status === 'to-do')
+  const ongoing = allTask.filter((task) => task.status === 'ongoing')
+  const completed = allTask.filter((task) => task.status === 'completed')
 
 
   const dragStarted = (e, id) => {
@@ -56,50 +57,50 @@ const DashboardMain = () => {
     console.log('draging over now');
   }
 
-  const dragDroppedTodo = (e,status) => {
+  const dragDroppedTodo = (e, status) => {
     console.log('you are drop now');
     let tanasperTaskId = e.dataTransfer.getData('todoid')
-    console.log(tanasperTaskId,status);
-    axios.put(`/alltask/${tanasperTaskId}`,{status:status})
-    .then(res=>{
-      console.log(res.data);
-      refetch()
-    })
+    console.log(tanasperTaskId, status);
+    axios.put(`/alltask/${tanasperTaskId}`, { status: status })
+      .then(res => {
+        console.log(res.data);
+        refetch()
+      })
   }
- 
-  const dragDroppedOngoing = (e,status) => {
+
+  const dragDroppedOngoing = (e, status) => {
     console.log('you are drop now');
     let tanasperTaskId = e.dataTransfer.getData('todoid')
-    console.log(tanasperTaskId,status);
-    axios.put(`/alltask/${tanasperTaskId}`,{status:status})
-    .then(res=>{
-      console.log(res.data);
-      refetch()
-    })
+    console.log(tanasperTaskId, status);
+    axios.put(`/alltask/${tanasperTaskId}`, { status: status })
+      .then(res => {
+        console.log(res.data);
+        refetch()
+      })
   }
-  const dragDroppedCompleted = (e,status) => {
+  const dragDroppedCompleted = (e, status) => {
     console.log('you are drop now');
     let tanasperTaskId = e.dataTransfer.getData('todoid')
-    console.log(tanasperTaskId,status);
-    axios.put(`/alltask/${tanasperTaskId}`,{status:status})
-    .then(res=>{
-      console.log(res.data);
-      refetch()
-    })
+    console.log(tanasperTaskId, status);
+    axios.put(`/alltask/${tanasperTaskId}`, { status: status })
+      .then(res => {
+        console.log(res.data);
+        refetch()
+      })
   }
 
   const handleDelete = id => {
     axios.delete(`/alltask/${id}`)
-    .then(()=>{
-      refetch();
-      toast("Task Deleted Sucessfully", {
-        icon: "👏",
-        style: {
-          background: "#333",
-          color: "#fff",
-        },
-      });
-    })
+      .then(() => {
+        refetch();
+        toast("Task Deleted Sucessfully", {
+          icon: "👏",
+          style: {
+            background: "#333",
+            color: "#fff",
+          },
+        });
+      })
   }
 
 
@@ -140,9 +141,10 @@ const DashboardMain = () => {
             <br />
             <select
               {...register("priority", { required: true })}
-              name=""
+              name="priority"
               id=""
               className="border-2 rounded-md border-black text-black px-2 py-1 w-full"
+
             >
               <option value="low">Low</option>
               <option value="moderate">Moderate</option>
@@ -171,7 +173,7 @@ const DashboardMain = () => {
         />
       </form>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
-        <div onDragOver={(e)=>dragingOver(e)} onDrop={(e)=>dragDroppedTodo(e,'to-do')} className="bg-[#181818] p-3 rounded-md">
+        <div onDragOver={(e) => dragingOver(e)} onDrop={(e) => dragDroppedTodo(e, 'to-do')} className="bg-[#181818] p-3 rounded-md">
           <h1 className="text-2xl text-white font-semibold mb-2">TO-DO</h1>
           {to_do?.map((task) => (
             <div key={task?._id}
@@ -181,14 +183,25 @@ const DashboardMain = () => {
             >
               <div className="flex justify-between items-center mb-2">
                 <h1 className="text-xl font-medium">{task?.title}</h1>
-                <button onClick={()=>handleDelete(task?._id)} className="text-xl text-red-700"><FaTrashCan/></button>
+                <button onClick={() => handleDelete(task?._id)} className="text-xl text-red-700"><FaTrashCan /></button>
               </div>
               <p className="text-sm leading-4 mb-2">{task?.descriptions}</p>
-              <span className="font-medium px-5 text-white bg-blue-700 rounded-2xl">{task?.priority}</span>
+              <span
+                className={`font-medium px-5 text-white ${task?.priority === "low"
+                    ? "bg-blue-700"
+                    : task?.priority === "moderate"
+                      ? "bg-yellow-500"
+                      : task?.priority === "high"
+                        ? "bg-red-500"
+                        : ""
+                  } rounded-2xl`}
+              >
+                {task?.priority}
+              </span>
             </div>
           ))}
         </div>
-        <div onDragOver={(e)=>dragingOver(e)} onDrop={(e)=>dragDroppedOngoing(e,'ongoing')} className="bg-[#181818] p-3 rounded-md">
+        <div onDragOver={(e) => dragingOver(e)} onDrop={(e) => dragDroppedOngoing(e, 'ongoing')} className="bg-[#181818] p-3 rounded-md">
           <h1 className="text-2xl text-white font-semibold uppercase">ongoing</h1>
           {ongoing?.map((task) => (
             <div key={task?._id}
@@ -198,14 +211,25 @@ const DashboardMain = () => {
             >
               <div className="flex justify-between items-center mb-2">
                 <h1 className="text-xl font-medium">{task?.title}</h1>
-                <button onClick={()=>handleDelete(task?._id)} className="text-xl text-red-700"><FaTrashCan/></button>
+                <button onClick={() => handleDelete(task?._id)} className="text-xl text-red-700"><FaTrashCan /></button>
               </div>
               <p className="text-sm leading-4 mb-2">{task?.descriptions}</p>
-              <span className="font-medium px-5 text-white bg-blue-700 rounded-2xl">{task?.priority}</span>
+              <span
+                className={`font-medium px-5 text-white ${task?.priority === "low"
+                    ? "bg-blue-700"
+                    : task?.priority === "moderate"
+                      ? "bg-yellow-500"
+                      : task?.priority === "high"
+                        ? "bg-red-500"
+                        : ""
+                  } rounded-2xl`}
+              >
+                {task?.priority}
+              </span>
             </div>
           ))}
         </div>
-        <div onDragOver={(e)=>dragingOver(e)} onDrop={(e)=>dragDroppedCompleted(e,'completed')} className="bg-[#181818] p-3 rounded-md">
+        <div onDragOver={(e) => dragingOver(e)} onDrop={(e) => dragDroppedCompleted(e, 'completed')} className="bg-[#181818] p-3 rounded-md">
           <h1 className="text-2xl font-semibold text-white uppercase">Completed</h1>
           {completed?.map((task) => (
             <div key={task?._id}
@@ -215,10 +239,21 @@ const DashboardMain = () => {
             >
               <div className="flex justify-between items-center mb-2">
                 <h1 className="text-xl font-medium">{task?.title}</h1>
-                <button onClick={()=>handleDelete(task?._id)} className="text-xl text-red-700"><FaTrashCan/></button>
+                <button onClick={() => handleDelete(task?._id)} className="text-xl text-red-700"><FaTrashCan /></button>
               </div>
               <p className="text-sm leading-4 mb-2">{task?.descriptions}</p>
-              <span className="font-medium px-5 text-white bg-blue-700 rounded-2xl">{task?.priority}</span>
+              <span
+                className={`font-medium px-5 text-white ${task?.priority === "low"
+                    ? "bg-blue-700"
+                    : task?.priority === "moderate"
+                      ? "bg-yellow-500"
+                      : task?.priority === "high"
+                        ? "bg-red-500"
+                        : ""
+                  } rounded-2xl`}
+              >
+                {task?.priority}
+              </span>
             </div>
           ))}
         </div>
